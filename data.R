@@ -2,7 +2,6 @@ library(readxl)
 library(readr)
 library(purrr)
 library(stringr)
-library(pryr)
 MS110 <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroups_110.xlsx')
 MS211 <- read_excel('../20190725 YLS SILAC/20190725 YLSproteinGroups_211.xlsx')
 MS312 <- read_excel('../20190725 YLS SILAC/20190725 YLS proteinGroups_312.xlsx')
@@ -27,13 +26,15 @@ extract.protein.name<- function(x){
     if (exists(name, envir = p, inherits = F)) {
       assign(name, obj, envir = p)
     }else{
-      assign(name, obj, envir = where(name))
+      assign(name, obj, envir = pryr::where(name))
     }
   } else {
     errorCondition("The type of argument should be 'character' or 'dataframe'")
   }
+  invisible()
 }
 data.obj <- ls(pattern = 'MS*')
-lapply(data.obj, extract.protein.name)
+extract.protein.name(MS110)
+
 
 
