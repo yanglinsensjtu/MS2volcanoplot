@@ -34,7 +34,8 @@ extract.protein.name<- function(x){
   invisible()
 }
 data.obj <- ls(pattern = 'MS*')
-extract.protein.name(MS110)
+lapply(data.obj, extract.protein.name)
+
 
 
 
