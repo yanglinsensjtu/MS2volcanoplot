@@ -2,12 +2,14 @@ library(readxl)
 library(readr)
 library(purrr)
 library(stringr)
-MS110 <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroups_110.xlsx')
-MS211 <- read_excel('../20190725 YLS SILAC/20190725 YLSproteinGroups_211.xlsx')
-MS312 <- read_excel('../20190725 YLS SILAC/20190725 YLS proteinGroups_312.xlsx')
-MS74 <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroups 74.xlsx')
-MS85 <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroup 85.xlsx')
-MS96 <- read_excel('../20190725 YLS SILAC/20190725YLS ProteinGroup_96.xlsx')
+MS110.con <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroups_110.xlsx')
+MS211.siRNA <- read_excel('../20190725 YLS SILAC/20190725 YLSproteinGroups_211.xlsx')
+MS312.siRNA <- read_excel('../20190725 YLS SILAC/20190725 YLS proteinGroups_312.xlsx')
+MS74.con <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroups 74.xlsx')
+MS85.siRNA <- read_excel('../20190725 YLS SILAC/20190725YLS proteinGroup 85.xlsx')
+MS96.siRNA <- read_excel('../20190725 YLS SILAC/20190725YLS ProteinGroup_96.xlsx')
+
+# modify the protein id ---------------------------------------------------
 
 extract.protein.name<- function(x){
   p <- parent.frame()
@@ -33,8 +35,42 @@ extract.protein.name<- function(x){
   }
   invisible()
 }
-data.obj <- ls(pattern = 'MS*')
+data.obj <- ls(pattern = 'MS*') #get the obj names
 lapply(data.obj, extract.protein.name)
+
+# normalized --------------------------------------------------------------
+
+z_score <- function(x){
+  (x - mean(x))/sd(x)
+}
+
+# remove na names ---------------------------------------------------------
+
+library(dplyr)
+row.na.rm <- function(x){
+  name <- x
+  x <- get(x)
+  x <- filter(x, !is.na(`Protein IDs`))
+  assign(name, x, envir = pryr::where(name))
+  invisible()
+}
+lapply(data.obj, row.na.rm)
+
+# select rows -------------------------------------------------------------
+
+select.intensity <- function(x){
+  name <- x
+  x <- get(x)
+  x <- select(x, `Protein IDs`,starts_with('Intensity'))
+  assign(name, x, envir = pryr::where(name))
+  invisible()
+}
+
+
+lapply(data.obj, select.intensity)
+
+
+
 
 
 
